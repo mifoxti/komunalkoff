@@ -1,5 +1,7 @@
 package com.example.komunalkoff;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -23,11 +25,13 @@ public class HomeFragment extends Fragment {
 
     private PieChart pieChart;
     private DatabaseHelper dbHelper;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dbHelper = new DatabaseHelper(getActivity());
+        sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -49,10 +53,16 @@ public class HomeFragment extends Fragment {
         pieChart.setHoleColor(android.R.color.transparent);
         pieChart.setTransparentCircleAlpha(0);
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setEntryLabelColor(android.R.color.black);
+        pieChart.setEntryLabelColor(Color.BLACK); // Устанавливаем цвет текста как в приложении
     }
 
     private void loadChartData() {
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+        if (!isLoggedIn) {
+            pieChart.clear();
+            return;
+        }
+
         List<PieEntry> entries = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT service_type, SUM(amount) FROM payments GROUP BY service_type", null);
@@ -85,7 +95,6 @@ public class HomeFragment extends Fragment {
         pieChart.notifyDataSetChanged();
         pieChart.invalidate(); // Обновление диаграммы
     }
-
 
     @Override
     public void onResume() {

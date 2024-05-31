@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = new ProfileFragment();
                     }
                 } else if (item.getItemId() == R.id.income) {
-                    fragment = new IncomeFragment();
+                    fragment = new HistoryFragment();
                 } else if (item.getItemId() == R.id.expense) {
                     fragment = new ExpenseFragment();
                 } else if (item.getItemId() == R.id.rate) {
